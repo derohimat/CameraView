@@ -505,12 +505,12 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
                 params.setRotation(sensorToOutput);
                 mCamera.setParameters(params);
                 mCamera.takePicture(mPlaySounds ?
-                        new Camera.ShutterCallback() {
-                            @Override
-                            public void onShutter() {
-                                mCameraCallbacks.onShutter(false);
-                            }
-                        } : null,
+                                new Camera.ShutterCallback() {
+                                    @Override
+                                    public void onShutter() {
+                                        mCameraCallbacks.onShutter(false);
+                                    }
+                                } : null,
                         null,
                         null,
                         new Camera.PictureCallback() {
@@ -882,12 +882,12 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     void setPlaySounds(boolean playSounds) {
         final boolean old = mPlaySounds;
         mPlaySounds = playSounds;
-        schedule(mPlaySoundsTask, true, new Runnable() {
+/*        schedule(mPlaySoundsTask, true, new Runnable() {
             @Override
             public void run() {
                 mergePlaySound(old);
             }
-        });
+        });*/
     }
 
     // -----------------
