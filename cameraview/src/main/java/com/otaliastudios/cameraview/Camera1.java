@@ -504,13 +504,13 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
                 Camera.Parameters params = mCamera.getParameters();
                 params.setRotation(sensorToOutput);
                 mCamera.setParameters(params);
-                mCamera.takePicture(
+                mCamera.takePicture(mPlaySounds ?
                         new Camera.ShutterCallback() {
                             @Override
                             public void onShutter() {
                                 mCameraCallbacks.onShutter(false);
                             }
-                        },
+                        } : null,
                         null,
                         null,
                         new Camera.PictureCallback() {
