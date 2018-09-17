@@ -12,7 +12,7 @@ addressing most of the common issues and needs, and still leaving you with flexi
 See [CHANGELOG](https://github.com/natario1/CameraView/blob/master/CHANGELOG.md).
 
 ```groovy
-compile 'com.otaliastudios:cameraview:1.5.1'
+compile 'com.otaliastudios:cameraview:1.6.0'
 ```
 
 Make sure your project repositories include the `jcenter()`:
@@ -92,8 +92,21 @@ To use the CameraView engine, simply add a `CameraView` to your layout:
     android:layout_height="wrap_content" />
 ```
 
-`CameraView` has lots of XML attributes, so keep reading. Make sure you override `onResume`,
-`onPause` and  `onDestroy` in your activity or fragment, and call `CameraView.start()`, `stop()`
+`CameraView` is a component bound to your activity or fragment lifecycle. This means that you must pass the 
+lifecycle owner using `setLifecycleOwner`: 
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    CameraView camera = findViewById(R.id.camera);
+    camera.setLifecycleOwner(this);
+    // From fragments, use fragment.viewLifecycleOwner instead of this!
+}
+```
+
+For those who are not using the support libraries and the lifecycle implementation, make sure you override `onResume`,
+`onPause` and  `onDestroy` in your component, and call `CameraView.start()`, `stop()`
 and `destroy()`.
 
 ```java
