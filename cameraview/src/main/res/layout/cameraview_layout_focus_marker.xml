@@ -13,12 +13,12 @@
             android:id="@+id/fill"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/focus_marker_fill" />
+            android:src="@drawable/icon_focus_mark" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/focus_marker_outline" />
+        <!--<ImageView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:src="@drawable/focus_marker_outline" />-->
 
     </FrameLayout>
 
