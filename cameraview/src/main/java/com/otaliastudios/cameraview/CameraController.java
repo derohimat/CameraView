@@ -177,10 +177,16 @@ abstract class CameraController implements
                 if (mState >= STATE_STARTING) return;
                 mState = STATE_STARTING;
                 LOG.i("Start:", "about to call onStart()", ss());
-                onStart();
-                LOG.i("Start:", "returned from onStart().", "Dispatching.", ss());
-                mState = STATE_STARTED;
-                mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
+
+                try{
+                    onStart();
+                    LOG.i("Start:", "returned from onStart().", "Dispatching.", ss());
+                    mState = STATE_STARTED;
+                    mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
+                }catch (Exception e){
+                    LOG.e("Start:", "Failed to connect Camera:", e);
+                    mState = STATE_STOPPED;
+                }
             }
         });
     }
@@ -238,10 +244,16 @@ abstract class CameraController implements
 
                 LOG.i("Restart: about to start. State:", ss());
                 mState = STATE_STARTING;
-                onStart();
-                mState = STATE_STARTED;
-                LOG.i("Restart: returned from start. Dispatching. State:", ss());
-                mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
+
+                try{
+                    onStart();
+                    mState = STATE_STARTED;
+                    LOG.i("Restart: returned from start. Dispatching. State:", ss());
+                    mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
+                }catch (Exception e){
+                    LOG.e("Restart:", "Failed to connect Camera:", e);
+                    mState = STATE_STOPPED;
+                }
             }
         });
     }
