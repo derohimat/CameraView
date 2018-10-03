@@ -177,17 +177,16 @@ abstract class CameraController implements
                 if (mState >= STATE_STARTING) return;
                 mState = STATE_STARTING;
                 LOG.i("Start:", "about to call onStart()", ss());
-                try {
+
+                try{
                     onStart();
-                } catch (Exception e) {
-                    mCameraCallbacks.dispatchError(new CameraException(e));
-                    LOG.e("Error:", "returned from onStart() with Exception.", "Dispatching.", ss());
+                    LOG.i("Start:", "returned from onStart().", "Dispatching.", ss());
+                    mState = STATE_STARTED;
+                    mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
+                }catch (Exception e){
+                    LOG.e("Start:", "Failed to connect Camera:", e);
                     mState = STATE_STOPPED;
-                    return;
                 }
-                LOG.i("Start:", "returned from onStart().", "Dispatching.", ss());
-                mState = STATE_STARTED;
-                mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
             }
         });
     }
@@ -245,17 +244,16 @@ abstract class CameraController implements
 
                 LOG.i("Restart: about to start. State:", ss());
                 mState = STATE_STARTING;
-                try {
+
+                try{
                     onStart();
-                } catch (Exception e) {
-                    mCameraCallbacks.dispatchError(new CameraException(e));
-                    LOG.e("Error Restart:", "returned from onStart() with Exception.", "Dispatching.", ss());
+                    mState = STATE_STARTED;
+                    LOG.i("Restart: returned from start. Dispatching. State:", ss());
+                    mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
+                }catch (Exception e){
+                    LOG.e("Restart:", "Failed to connect Camera:", e);
                     mState = STATE_STOPPED;
-                    return;
                 }
-                mState = STATE_STARTED;
-                LOG.i("Restart: returned from start. Dispatching. State:", ss());
-                mCameraCallbacks.dispatchOnCameraOpened(mCameraOptions);
             }
         });
     }

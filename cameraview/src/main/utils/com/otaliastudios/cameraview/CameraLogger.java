@@ -54,6 +54,8 @@ public final class CameraLogger {
     private static int sLevel;
     private static List<Logger> sLoggers;
 
+    private static boolean sLogSwitch = true;
+
     static {
         setLogLevel(LEVEL_ERROR);
         sLoggers = new ArrayList<>();
@@ -134,6 +136,8 @@ public final class CameraLogger {
     }
 
     private void log(@LogLevel int level, Object... data) {
+        if(!sLogSwitch) return;
+
         if (!should(level)) return;
 
         String message = "";
@@ -153,6 +157,10 @@ public final class CameraLogger {
 
         lastMessage = message;
         lastTag = mTag;
+    }
+
+    public static void setLogSwitch(boolean logSwitch) {
+        sLogSwitch = logSwitch;
     }
 }
 
