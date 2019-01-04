@@ -27,11 +27,9 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
 
     private static final String TAG = Camera1.class.getSimpleName();
     private static final CameraLogger LOG = CameraLogger.create(TAG);
-
+    private final int mPostFocusResetDelay = 3000;
     private Camera mCamera;
     private boolean mIsBound = false;
-
-    private final int mPostFocusResetDelay = 3000;
     private Runnable mPostFocusResetRunnable = new Runnable() {
         @Override
         public void run() {
@@ -50,6 +48,46 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     Camera1(@NonNull CameraView.CameraCallbacks callback) {
         super(callback);
         mMapper = new Mapper1();
+    }
+
+    @WorkerThread
+    private static List<Camera.Area> computeMeteringAreas(double viewClickX, double viewClickY,
+                                                          int viewWidth, int viewHeight,
+                                                          int sensorToDisplay) {
+        // Event came in view coordinates. We must rotate to sensor coordinates.
+        // First, rescale to the -1000 ... 1000 range.
+        int displayToSensor = -sensorToDisplay;
+        viewClickX = -1000d + (viewClickX / (double) viewWidth) * 2000d;
+        viewClickY = -1000d + (viewClickY / (double) viewHeight) * 2000d;
+
+        // Apply rotation to this point.
+        // https://academo.org/demos/rotation-about-point/
+        double theta = ((double) displayToSensor) * Math.PI / 180;
+        double sensorClickX = viewClickX * Math.cos(theta) - viewClickY * Math.sin(theta);
+        double sensorClickY = viewClickX * Math.sin(theta) + viewClickY * Math.cos(theta);
+        LOG.i("focus:", "viewClickX:", viewClickX, "viewClickY:", viewClickY);
+        LOG.i("focus:", "sensorClickX:", sensorClickX, "sensorClickY:", sensorClickY);
+
+        // Compute the rect bounds.
+        Rect rect1 = computeMeteringArea(sensorClickX, sensorClickY, 150d);
+        int weight1 = 1000; // 150 * 150 * 1000 = more than 10.000.000
+        Rect rect2 = computeMeteringArea(sensorClickX, sensorClickY, 300d);
+        int weight2 = 100; // 300 * 300 * 100 = 9.000.000
+
+        List<Camera.Area> list = new ArrayList<>(2);
+        list.add(new Camera.Area(rect1, weight1));
+        list.add(new Camera.Area(rect2, weight2));
+        return list;
+    }
+
+    private static Rect computeMeteringArea(double centerX, double centerY, double size) {
+        double delta = size / 2d;
+        int top = (int) Math.max(centerY - delta, -1000);
+        int bottom = (int) Math.min(centerY + delta, 1000);
+        int left = (int) Math.max(centerX - delta, -1000);
+        int right = (int) Math.min(centerX + delta, 1000);
+        LOG.i("focus:", "computeMeteringArea:", "top:", top, "left:", left, "bottom:", bottom, "right:", right);
+        return new Rect(left, top, right, bottom);
     }
 
     private void schedule(@Nullable final Task<Void> task, final boolean ensureAvailable, final Runnable action) {
@@ -319,9 +357,14 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         Exception runtime = new RuntimeException(CameraLogger.lastMessage);
         int reason;
         switch (error) {
-            case Camera.CAMERA_ERROR_EVICTED: reason = CameraException.REASON_DISCONNECTED; break;
-            case Camera.CAMERA_ERROR_UNKNOWN: reason = CameraException.REASON_UNKNOWN; break;
-            default: reason = CameraException.REASON_UNKNOWN;
+            case Camera.CAMERA_ERROR_EVICTED:
+                reason = CameraException.REASON_DISCONNECTED;
+                break;
+            case Camera.CAMERA_ERROR_UNKNOWN:
+                reason = CameraException.REASON_UNKNOWN;
+                break;
+            default:
+                reason = CameraException.REASON_UNKNOWN;
         }
         throw new CameraException(runtime, reason);
     }
@@ -442,7 +485,6 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         return false;
     }
 
-
     @Override
     void setAudio(@NonNull Audio audio) {
         if (mAudio != audio) {
@@ -476,7 +518,6 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         mFlash = oldFlash;
         return false;
     }
-
 
     // Choose the best default focus, based on session type.
     private void applyDefaultFocus(@NonNull Camera.Parameters params) {
@@ -551,7 +592,6 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         });
     }
 
-
     @Override
     void takePictureSnapshot(@NonNull final AspectRatio viewAspectRatio) {
         LOG.v("takePictureSnapshot: scheduling");
@@ -581,6 +621,9 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
             }
         });
     }
+
+    // -----------------
+    // Video recording stuff.
 
     @Override
     public void onPreviewFrame(@NonNull byte[] data, Camera camera) {
@@ -765,8 +808,7 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     }
 
     // -----------------
-    // Zoom and simpler stuff.
-
+    // Tap to focus stuff.
 
     @Override
     void setZoom(final float zoom, @Nullable final PointF[] points, final boolean notify) {
@@ -812,10 +854,6 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
             }
         });
     }
-
-    // -----------------
-    // Tap to focus stuff.
-
 
     @Override
     void startAutoFocus(@Nullable final Gesture gesture, @NonNull final PointF point) {
@@ -913,7 +951,6 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     // -----------------
     // Size stuff.
 
-
     @Nullable
     private List<Size> sizesFromList(@Nullable List<Camera.Size> sizes) {
         if (sizes == null) return null;
@@ -930,12 +967,12 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     void setPlaySounds(boolean playSounds) {
         final boolean old = mPlaySounds;
         mPlaySounds = playSounds;
-        schedule(mPlaySoundsTask, true, new Runnable() {
+/*        schedule(mPlaySoundsTask, true, new Runnable() {
             @Override
             public void run() {
                 applyPlaySounds(old);
             }
-        });
+        });*/
     }
 }
 

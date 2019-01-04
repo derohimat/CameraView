@@ -17,6 +17,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.location.Location;
 import android.media.MediaActionSound;
+import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -1818,6 +1819,19 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
                 public void run() {
                     for (CameraListener listener : mListeners) {
                         listener.onCameraError(exception);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void dispatchOnMediaRecorderChanged(@Nullable final MediaRecorder mediaRecorder) {
+            mLogger.i("dispatchOnMediaRecorderChanged");
+            mUiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    for (CameraListener listener : mListeners) {
+                        listener.onMediaRecorderChanged(mediaRecorder);
                     }
                 }
             });

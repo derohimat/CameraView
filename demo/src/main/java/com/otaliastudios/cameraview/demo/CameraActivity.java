@@ -34,6 +34,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
+        CameraLogger.setLogSwitch(BuildConfig.DEBUG);
 
         camera = findViewById(R.id.camera);
         camera.setLifecycleOwner(this);

@@ -141,4 +141,14 @@ public abstract class CameraListener {
 
     }
 
+    /**
+     * Notifies that a new MediaRecorder is in use or a previous one has been
+     * released.
+     *
+     * @param mediaRecorder A new MediaRecorder or null
+     */
+    @UiThread
+    public void onMediaRecorderChanged(@Nullable MediaRecorder mediaRecorder) {
+
+    }
 }

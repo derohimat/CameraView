@@ -111,16 +111,28 @@ class TapGestureLayout extends GestureLayout {
         mFocusMarkerContainer.setTranslationX(x);
         mFocusMarkerContainer.setTranslationY(y);
 
-        mFocusMarkerContainer.setScaleX(1.36f);
-        mFocusMarkerContainer.setScaleY(1.36f);
+//        mFocusMarkerContainer.setScaleX(1.36f);
+//        mFocusMarkerContainer.setScaleY(1.36f);
+        mFocusMarkerContainer.setScaleX(1f);
+        mFocusMarkerContainer.setScaleY(1f);
         mFocusMarkerContainer.setAlpha(1f);
-        mFocusMarkerFill.setScaleX(0);
-        mFocusMarkerFill.setScaleY(0);
+//        mFocusMarkerFill.setScaleX(0);
+//        mFocusMarkerFill.setScaleY(0);
+        mFocusMarkerFill.setScaleX(1f);
+        mFocusMarkerFill.setScaleY(1f);
         mFocusMarkerFill.setAlpha(1f);
 
         // Since onFocusEnd is not guaranteed to be called, we post a hide runnable just in case.
-        animate(mFocusMarkerContainer, 1, 1, 300, 0, null);
-        animate(mFocusMarkerFill, 1, 1, 300, 0, new AnimatorListenerAdapter() {
+//        animate(mFocusMarkerContainer, 1, 1, 300, 0, null);
+//        animate(mFocusMarkerFill, 1, 1, 300, 0, new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                super.onAnimationEnd(animation);
+//                postDelayed(mFocusMarkerHideRunnable, 2000);
+//            }
+//        });
+        animate(mFocusMarkerContainer, 0.9f, 1, 300, 0, null);
+        animate(mFocusMarkerFill, 0.9f, 1, 300, 0, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
@@ -130,19 +142,21 @@ class TapGestureLayout extends GestureLayout {
     }
 
     public void onFocusEnd(boolean success) {
-        if (success) {
-            animate(mFocusMarkerContainer, 1, 0, 500, 0, null);
-            animate(mFocusMarkerFill, 1, 0, 500, 0, null);
-        } else {
-            animate(mFocusMarkerFill, 0, 0, 500, 0, null);
-            animate(mFocusMarkerContainer, 1.36f, 1, 500, 0, new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    animate(mFocusMarkerContainer, 1.36f, 0, 200, 1000, null);
-                }
-            });
-        }
+//        if (success) {
+//            animate(mFocusMarkerContainer, 1, 0, 500, 0, null);
+//            animate(mFocusMarkerFill, 1, 0, 500, 0, null);
+            animate(mFocusMarkerContainer, 0.9f, 0, 500, 0, null);
+            animate(mFocusMarkerFill, 0.9f, 0, 500, 0, null);
+//        } else {
+//            animate(mFocusMarkerFill, 0, 0, 500, 0, null);
+//            animate(mFocusMarkerContainer, 1.36f, 1, 500, 0, new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationEnd(Animator animation) {
+//                    super.onAnimationEnd(animation);
+//                    animate(mFocusMarkerContainer, 1.36f, 0, 200, 1000, null);
+//                }
+//            });
+//        }
     }
 
     private static void animate(@NonNull View view, float scale, float alpha, long duration, long delay,
