@@ -20,6 +20,8 @@ import com.otaliastudios.cameraview.PictureResult;
 import com.otaliastudios.cameraview.Mode;
 import com.otaliastudios.cameraview.VideoResult;
 
+import java.io.File;
+
 
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener, ControlView.Callback {
 
@@ -164,7 +166,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
         if (camera.isTakingPicture() || camera.isTakingVideo()) return;
         message("Recording for 5 seconds...", true);
-        camera.takeVideo(null, 5000);
+        camera.takeVideo(new File(getFilesDir(), "video.mp4"), 5000);
     }
 
     private void captureVideoSnapshot() {
@@ -173,7 +175,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             return;
         }
         message("Recording snapshot for 5 seconds...", true);
-        camera.takeVideoSnapshot(null, 5000);
+        camera.takeVideoSnapshot(new File(getFilesDir(), "video.mp4"), 5000);
     }
 
     private void toggleCamera() {
